@@ -14,8 +14,6 @@ MIN_LOG_SIZE = 0
 
 # logger name and level values
 LOGGER_NAME = 'logger1'
-DEBUG_LVL = 10
-STANDARD_LVL = 20
 
 class Plugin(plugins.ClientPlugin):
 	authors = ['Zach Janice']
@@ -49,9 +47,9 @@ class Plugin(plugins.ClientPlugin):
 
 		# determine if running in debug mode (?) and set the level of the logger accordingly
 		if True:
-			logger.setLevel(DEBUG_LVL)
+			logger.setLevel(logging.DEBUG)
 		else:
-			logger.setLevel(STANDARD_LVL)
+			logger.setLevel(logging.INFO)
 
 	# this is a cleanup method to allow the plugin to close any open resources
 	def finalize(self):
