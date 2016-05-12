@@ -14,6 +14,7 @@ MIN_LOG_SIZE = 0
 
 # logger name and level values
 LOGGER_NAME = 'KingPhisher'
+LOG_FILE_DIR = king_phisher.client.application.USER_DATA_PATH
 LOG_FILE_NAME = 'client_log.log'
 
 class Plugin(plugins.ClientPlugin):
@@ -29,6 +30,12 @@ class Plugin(plugins.ClientPlugin):
 	}
 	homepage = 'https://github.com/securestate/king-phisher-plugins'
 	options = [
+		plugins.ClientOptionString(
+			'file_dir',
+			'The directory to write the log file to.',
+			default="{0}/{1}".format(LOG_FILE_DIR, LOG_FILE_NAME),
+			display_name='File Directory'
+		),
 		plugins.ClientOptionInteger(
 			'log_size',
 			'The size of the log to keep.',
@@ -59,11 +66,8 @@ class Plugin(plugins.ClientPlugin):
 		handler.setFormatter(formatter)
 		logger.addHandler(handler)
 
-		# determine if running in debug mode (?) and set the level of the logger accordingly
-		if True:
-			logger.setLevel(logging.DEBUG)
-		else:
-			logger.setLevel(logging.INFO)
+		# Set level of logger to accept up to debug info
+		logger.setLevel(logging.DEBUG)
 
 	# this is a cleanup method to allow the plugin to close any open resources
 	def finalize(self):
