@@ -11,10 +11,11 @@ else:
 # default and minimum log file size values (in MB)
 DEFAULT_LOG_SIZE = 10
 MIN_LOG_SIZE = 0
+LOG_FILE_COUNT = 2
 
 # logger name and level values
 LOGGER_NAME = 'KingPhisher'
-LOG_FILE_DIR = king_phisher.client.application.USER_DATA_PATH
+DEFAULT_LOG_FILE_DIR = king_phisher.client.application.USER_DATA_PATH
 LOG_FILE_NAME = 'client_log.log'
 
 class Plugin(plugins.ClientPlugin):
@@ -33,7 +34,7 @@ class Plugin(plugins.ClientPlugin):
 		plugins.ClientOptionString(
 			'file_dir',
 			'The directory to write the log file to.',
-			default="{0}/{1}".format(LOG_FILE_DIR, LOG_FILE_NAME),
+			default="{0}/{1}".format(DEFAULT_LOG_FILE_DIR, LOG_FILE_NAME),
 			display_name='File Directory'
 		),
 		plugins.ClientOptionInteger(
@@ -56,12 +57,16 @@ class Plugin(plugins.ClientPlugin):
 		if log_file_size < 0:
 			print('WARNING: Log file size overflow; reverting to 1000B')
 			log_file_size = 1000
-	
+
+		# create the directory for the log file if it does not exist
+		if not os.path.exists(DEFAULT_LOG_FLE_DIR):
+			os.makedir(DEFAULT_LOG_FILE_DIR)
+
 		# grab the logger in use by the client (root logger)
 		logger = logging.getLogger(LOGGER_NAME)
 
 		# set up the handler and formatter for the logger, and attach the components
-		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=100)
+		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=LOG_FILE_COUNT)
 		formatter = logging.Formatter('%(message)')
 		handler.setFormatter(formatter)
 		logger.addHandler(handler)
