@@ -44,7 +44,7 @@ class Plugin(plugins.ClientPlugin):
 			print("Log size parameter below minimum size; setting to default of {0}MB.".format(DEFAULT_LOG_SIZE))
 			self.config['log_size'] = DEFAULT_LOG_SIZE
 
-		# calculate the log file size (B) from the sanitized log size input (MB)
+		# calculate the log file size (B) from the sanitized log size input (MB) and check for overflow
 		log_file_size = self.config['log_size'] * 1024 * 1024
 		if log_file_size < 0:
 			print('WARNING: Log file size overflow; reverting to 1000B')
@@ -53,10 +53,11 @@ class Plugin(plugins.ClientPlugin):
 		# grab the logger in use by the client (root logger)
 		logger = logging.getLogger(LOGGER_NAME)
 
-		# set up the handler and formatter for the logger
+		# set up the handler and formatter for the logger, and attach the components
 		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=100)
 		formatter = logging.Formatter('%(message)')
 		handler.setFormatter(formatter)
+		logger.addHandler(handler)
 
 		# determine if running in debug mode (?) and set the level of the logger accordingly
 		if True:
