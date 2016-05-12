@@ -14,6 +14,7 @@ MIN_LOG_SIZE = 0
 
 # logger name and level values
 LOGGER_NAME = 'KingPhisher'
+LOG_FILE_NAME = 'client_log.log'
 
 class Plugin(plugins.ClientPlugin):
 	authors = ['Zach Janice']
@@ -40,10 +41,20 @@ class Plugin(plugins.ClientPlugin):
 		if self.config['log_size'] < MIN_LOG_SIZE:
 			print("Log size parameter below minimum size; setting to default of {0}MB.".format(DEFAULT_LOG_SIZE))
 			self.config['log_size'] = DEFAULT_LOG_SIZE
+
+		# calculate the log file size (B) from the sanitized log size input (MB)
+		log_file_size = self.config['log_size'] * 1024 * 1024
+		if log_file_size < 0:
+			print('WARNING: Log file size overflow; reverting to 1000B')
+			log_file_size = 1000
 	
-		# instantiate the logger
+		# grab the logger in use by the client (root logger)
 		logger = logging.getLogger(LOGGER_NAME)
-		self.logger = logger
+
+		# set up the handler and formatter for the logger
+		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=100)
+		formatter = logging.Formatter('%(message)')
+		handler.setFormatter(formatter)
 
 		# determine if running in debug mode (?) and set the level of the logger accordingly
 		if True:
