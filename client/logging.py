@@ -67,7 +67,7 @@ class Plugin(plugins.ClientPlugin):
 
 		# set up the handler and formatter for the logger, and attach the components
 		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=LOG_FILE_COUNT)
-		formatter = logging.Formatter('%(message)')
+		formatter = logging.Formatter('%(asctime)s -- %(name) <%(levelname)>: %(message)')
 		handler.setFormatter(formatter)
 		logger.addHandler(handler)
 
@@ -76,7 +76,10 @@ class Plugin(plugins.ClientPlugin):
 
 	# this is a cleanup method to allow the plugin to close any open resources
 	def finalize(self):
-		# code here
+		# remove the logging handler from the logger and close it
+		logger.removeHandler(handler)
+		header.flush()
+		header.close()
 
 	def signal_exit(self, app):
 		# code here
