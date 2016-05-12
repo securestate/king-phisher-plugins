@@ -13,7 +13,7 @@ DEFAULT_LOG_SIZE = 10
 MIN_LOG_SIZE = 0
 
 # logger name and level values
-LOGGER_NAME = 'logger1'
+LOGGER_NAME = 'KingPhisher'
 
 class Plugin(plugins.ClientPlugin):
 	authors = ['Zach Janice']
