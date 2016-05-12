@@ -20,7 +20,9 @@ class Plugin(plugins.ClientPlugin):
 	authors = ['Zach Janice']
 	title = 'Logger'
 	description = """
-	
+	Keep a log of campaign feedback and results. The file size
+	(in MB) of the log can be specified. Plugin requires the
+	logging package available for Python.
 	"""
 	req_packages {
 		'logger': has_logger
