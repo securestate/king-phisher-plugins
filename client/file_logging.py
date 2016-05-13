@@ -66,17 +66,28 @@ class Plugin(plugins.ClientPlugin):
 	# this is the primary plugin entry point which is executed when the plugin is enabled
 	def initialize(self):
 		log_dir = self.config['log_dir']
-		if not os.path.isdir(log_file_dir):
-			unsanitary_log_dir = True
-			self.config['log_dir'], log_dir = DEFAULT_LOG_DIR
-		else:
-			unsanitary_log_dir = False
+		unsanitary_log_dir_arg = False
+
+		# attempt to create the directory for the log file if it does not exist
+		try:
+			if not os.path.exists(log_dir):
+				os.mkdir(log_dir)
+		except Exception:
+			# revert to default directory
+			unsanitary_log_dir_arg = True
+			self.config['log_dir'] = DEFAULT_LOG_DIR
+			log_dir = DEFAULT_LOG_DIR
+
+			# create the directory if it does not exist
+			if not os.path.exists(log_dir):
+				os.mkdir(log_dir)
 
 		# sanitize the log file size option argument
 		log_file_size = self.config['log_file_size']
 		if log_file_size < MIN_LOG_FILE_SIZE:
 			unsanitary_file_size_arg = True
-			self.config['log_file_size'], log_file_size = MIN_LOG_FILE_SIZE
+			self.config['log_file_size'] = MIN_LOG_FILE_SIZE
+			log_file_size = MIN_LOG_FILE_SIZE
 		else:
 			unsanitary_file_size_arg = False
 
@@ -84,16 +95,13 @@ class Plugin(plugins.ClientPlugin):
 		log_file_count = self.config['log_file_count']
 		if log_file_count < MIN_LOG_FILE_COUNT:
 			unsanitary_file_count_arg = True
-			self.config['log_file_count'], log_file_size = MIN_LOG_FILE_COUNT
+			self.config['log_file_count'] = MIN_LOG_FILE_COUNT
+			log_file_size = MIN_LOG_FILE_COUNT
 		else:
-			unsanitary_log_file_count = False
+			unsanitary_file_count_arg = False
 
 		# convert the specified log file size (MB) to bytes for use by the logger
 		file_size = log_file_size * 1024 * 1024
-
-		# create the directory for the log file if it does not exist
-		if not os.path.exists(log_file_dir):
-			os.mkdir(log_file_dir)
 
 		# grab the logger in use by the client (root logger)
 		logger = logging.getLogger(LOGGER_NAME)
@@ -111,7 +119,7 @@ class Plugin(plugins.ClientPlugin):
 		logger.setLevel(logging.DEBUG)
 
 		# Report unsanitary input and resulting reversions, if applicable
-		if unsanitary_log_dir:
+		if unsanitary_log_dir_arg:
 			logger.warning("Invalid directory specified for Logging plugin preference 'Log Directory' (not a directory); reverting to default directory of {0}".format(log_dir))
 		if unsanitary_file_size_arg:
 			logger.warning("Invalid value for Logging plugin preference 'Log File Size' (below min value); reverting to min value of {0}".format(log_file_size))
