@@ -1,32 +1,12 @@
+import logging
+import os
+
+import king_phisher
 import king_phisher.client.plugins as plugins
 import king_phisher.client.gui_utilities as gui_utilities
 
-try:
-	import logging
-except ImportError:
-	has_logger = False # catch standard ImportError and set has_logger to False
-else:
-	has_logger = True # no errors, so logger has been imported
-
-try:
-	import os
-except ImportError:
-	has_os = False #catch standard ImportError and set has_os to False
-else:
-	has_os = True # no errors, so os has been imported
-
-# default values for configuration options
-DEFAULT_LOG_DIR = os.path.expanduser('~/.config/king-phisher/logs')
-DEFAULT_LOG_FILE_SIZE = 10
-DEFAULT_LOG_FILE_COUNT = 2
-
-# minimum integer option values
-MIN_LOG_FILE_SIZE = 1
-MIN_LOG_FILE_COUNT = 1
-
-# logger name and file name values
+# logger name value
 LOGGER_NAME = ''
-LOG_FILE_NAME = 'client_log.log'
 
 class Plugin(plugins.ClientPlugin):
 	authors = ['Zach Janice']
@@ -37,66 +17,32 @@ class Plugin(plugins.ClientPlugin):
 	the number of log files kept can be specified. Plugin requires
 	the 'logging' and 'os' packages available for Python.
 	"""
-	req_packages = {
-		'logger': has_logger,
-		'os': has_os
-	}
+	req_packages = {}
 	homepage = 'https://github.com/securestate/king-phisher-plugins'
-	options = [
-		plugins.ClientOptionString(
-			'log_dir',
-			'The directory in which to create the log file(s).',
-			default=DEFAULT_LOG_DIR,
-			display_name='Log Directory'
-		),
-		plugins.ClientOptionInteger(
-			'log_file_size',
-			'The maximum size, in megabytes, of a single log file.',
-			default=DEFAULT_LOG_FILE_SIZE,
-			display_name='Log File Size (MB)'
-		),
-		plugins.ClientOptionInteger(
-			'log_file_count',
-			'The number of log files that will be maintained by the plugin.',
-			default=DEFAULT_LOG_FILE_COUNT,
-			display_name='Number of Log Files'
-		)
-	]
+	options = []
 
 	# this is the primary plugin entry point which is executed when the plugin is enabled
 	def initialize(self):
-		log_dir = self.config['log_dir']
-		unsanitary_log_dir_arg = False
-
-		# attempt to create the directory for the log file if it does not exist
-		try:
-			if not os.path.exists(log_dir):
-				os.mkdir(log_dir)
-		except Exception:
-			# revert to default directory
-			unsanitary_log_dir_arg = True
-			self.config['log_dir'] = DEFAULT_LOG_DIR
-			log_dir = DEFAULT_LOG_DIR
-
-			# create the directory if it does not exist
-			if not os.path.exists(log_dir):
-				os.mkdir(log_dir)
+		# ensure the directory for the logs exists
+		log_dir = king_phisher.client.application.USER_DATA_PATH
+		if not os.path.exists(log_dir):
+			os.mkdir(log_dir)
 
 		# sanitize the log file size option argument
 		log_file_size = self.config['log_file_size']
-		if log_file_size < MIN_LOG_FILE_SIZE:
+		if log_file_size < 1:
 			unsanitary_file_size_arg = True
-			self.config['log_file_size'] = MIN_LOG_FILE_SIZE
-			log_file_size = MIN_LOG_FILE_SIZE
+			self.config['log_file_size'] = 1
+			log_file_size = 1
 		else:
 			unsanitary_file_size_arg = False
 
 		# sanitize the log file count option argument
 		log_file_count = self.config['log_file_count']
-		if log_file_count < MIN_LOG_FILE_COUNT:
+		if log_file_count < 1:
 			unsanitary_file_count_arg = True
-			self.config['log_file_count'] = MIN_LOG_FILE_COUNT
-			log_file_size = MIN_LOG_FILE_COUNT
+			self.config['log_file_count'] = 1
+			log_file_count = 1
 		else:
 			unsanitary_file_count_arg = False
 
@@ -107,7 +53,7 @@ class Plugin(plugins.ClientPlugin):
 		logger = logging.getLogger(LOGGER_NAME)
 
 		# set up the handler and formatter for the logger, and attach the components
-		handler = logging.handlers.RotatingFileHandler("{0}/{1}".format(log_dir, LOG_FILE_NAME), maxBytes=file_size, backupCount=log_file_count)
+		handler = logging.handlers.RotatingFileHandler("{0}/{1}".format(log_dir, 'client_log.log'), maxBytes=file_size, backupCount=log_file_count)
 		formatter = logging.Formatter('%(asctime)s -- %(name)s -- %(levelname)s: %(message)s')
 		handler.setFormatter(formatter)
 		logger.addHandler(handler)
@@ -115,16 +61,11 @@ class Plugin(plugins.ClientPlugin):
 		# keep reference of handler as an attribute
 		self.handler = handler
 
-		# Set level of logger to accept up to debug info
-		logger.setLevel(logging.DEBUG)
-
 		# Report unsanitary input and resulting reversions, if applicable
-		if unsanitary_log_dir_arg:
-			logger.warning("Invalid directory specified for Logging plugin preference 'Log Directory' (not a directory); reverting to default directory of {0}".format(log_dir))
 		if unsanitary_file_size_arg:
-			logger.warning("Invalid value for Logging plugin preference 'Log File Size' (below min value); reverting to min value of {0}".format(log_file_size))
+			self.logger.warning("Invalid value for Logging plugin preference 'Log File Size' (below min value); reverting to min value of {0}".format(log_file_size))
 		if unsanitary_file_count_arg:
-			logger.warning("Invalid value for Logging plugin preference 'Log File Count' (below min value); reverting to min value of {0}".format(log_file_count))
+			self.logger.warning("Invalid value for Logging plugin preference 'Log File Count' (below min value); reverting to min value of {0}".format(log_file_count))
 
 		return True
 
