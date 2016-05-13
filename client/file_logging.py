@@ -8,14 +8,21 @@ except ImportError:
 else:
 	has_logger = True # no errors, so logger has been imported
 
+try:
+	import os
+except ImportError:
+	has_os = False #catch standard ImportError and set has_os to False
+else:
+	has_os = True # no errors, so os has been imported
+
 # default and minimum log file size values (in MB)
-DEFAULT_LOG_SIZE = 10
-MIN_LOG_SIZE = 0
+LOG_FILE_SIZE = 10
 LOG_FILE_COUNT = 2
 
 # logger name and level values
-LOGGER_NAME = 'KingPhisher'
-DEFAULT_LOG_FILE_DIR = king_phisher.client.application.USER_DATA_PATH
+LOGGER_NAME = ''
+LOG_FILE_DIR = os.path.expanduser('~/.config/king-phisher/logs')
+#LOG_FILE_DIR = os.path.expanduser('~/.config/king-phisher')
 LOG_FILE_NAME = 'client_log.log'
 
 class Plugin(plugins.ClientPlugin):
@@ -24,62 +31,46 @@ class Plugin(plugins.ClientPlugin):
 	description = """
 	Keep a log of campaign feedback and results. The file size
 	(in MB) of the log can be specified. Plugin requires the
-	logging package available for Python.
+	'logging' and 'os' packages available for Python.
 	"""
-	req_packages {
-		'logger': has_logger
+	req_packages = {
+		'logger': has_logger,
+		'os': has_os
 	}
 	homepage = 'https://github.com/securestate/king-phisher-plugins'
-	options = [
-		plugins.ClientOptionString(
-			'file_dir',
-			'The directory to write the log file to.',
-			default="{0}/{1}".format(DEFAULT_LOG_FILE_DIR, LOG_FILE_NAME),
-			display_name='File Directory'
-		),
-		plugins.ClientOptionInteger(
-			'log_size',
-			'The size of the log to keep.',
-			default=DEFAULT_LOG_SIZE,
-			display_name='Log Size'
-		)
-	]
+	options = []
 
 	# this is the primary plugin entry point which is executed when the plugin is enabled
 	def initialize(self):
-		# ensure a valid log file size in the config
-		if self.config['log_size'] < MIN_LOG_SIZE:
-			print("Log size parameter below minimum size; setting to default of {0}MB.".format(DEFAULT_LOG_SIZE))
-			self.config['log_size'] = DEFAULT_LOG_SIZE
-
-		# calculate the log file size (B) from the sanitized log size input (MB) and check for overflow
-		log_file_size = self.config['log_size'] * 1024 * 1024
-		if log_file_size < 0:
-			print('WARNING: Log file size overflow; reverting to 1000B')
-			log_file_size = 1000
+		# convert the default log size (MB) to bytes for use by the logger
+		file_size = LOG_FILE_SIZE * 1024 * 1024
 
 		# create the directory for the log file if it does not exist
-		if not os.path.exists(DEFAULT_LOG_FLE_DIR):
-			os.makedir(DEFAULT_LOG_FILE_DIR)
+		if not os.path.exists(LOG_FILE_DIR):
+			os.mkdir(LOG_FILE_DIR)
 
 		# grab the logger in use by the client (root logger)
 		logger = logging.getLogger(LOGGER_NAME)
 
 		# set up the handler and formatter for the logger, and attach the components
-		handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, maxBytes=log_file_size, backupCount=LOG_FILE_COUNT)
-		formatter = logging.Formatter('%(asctime)s -- %(name) <%(levelname)>: %(message)')
+		handler = logging.handlers.RotatingFileHandler("{0}/{1}".format(LOG_FILE_DIR, LOG_FILE_NAME), maxBytes=file_size, backupCount=LOG_FILE_COUNT)
+		formatter = logging.Formatter('%(asctime)s -- %(name)s -- %(levelname)s: %(message)s')
 		handler.setFormatter(formatter)
 		logger.addHandler(handler)
+
+		# keep reference of handler as an attribute
+		self.handler = handler
 
 		# Set level of logger to accept up to debug info
 		logger.setLevel(logging.DEBUG)
 
+		return True
+
 	# this is a cleanup method to allow the plugin to close any open resources
 	def finalize(self):
 		# remove the logging handler from the logger and close it
-		logger.removeHandler(handler)
-		header.flush()
-		header.close()
+		logger = logging.getLogger(LOGGER_NAME)
+		logger.removeHandler(self.handler)
+		self.handler.flush()
+		self.handler.close()
 
-	def signal_exit(self, app):
-		# code here
