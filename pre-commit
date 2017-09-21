@@ -32,18 +32,23 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
 import argparse
 import datetime
+import getpass
 import glob
 import importlib
+import json
 import os
 import sys
 import textwrap
+from hashlib import md5
 
 import ecdsa
 import jinja2
+from Crypto.Cipher import AES
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 if sys.version_info < (3, 4):
 	# python 3 is required to import without an __init__.py file
@@ -68,10 +73,52 @@ try:
 	import king_phisher.catalog as catalog
 	import king_phisher.security_keys as security_keys
 	import king_phisher.serializers as serializers
-except ImportError:
+except ImportError as error:
 	print('failed to import king_phisher')
 	print('path assumed to be at: ' + king_phisher_dir)
+	print('Exception: ' + error)
 	sys.exit(os.EX_UNAVAILABLE)
+
+
+class Decrypt:
+	@staticmethod
+	def _chr(i):
+		if isinstance(i, bytes):
+			return i
+		return chr(i).encode('utf-8')
+
+	@staticmethod
+	def _derive_key_and_iv(password, salt, key_length, iv_length):
+		d = d_i = b''
+		while len(d) < key_length + iv_length:
+			d_i = md5(d_i + password + salt).digest()
+			d += d_i
+		return d[:key_length], d[key_length:key_length+iv_length]
+
+	@staticmethod
+	def key_file(in_file, password=None, key_length=32):
+		if password is None:
+			return None
+
+		assert isinstance(password, bytes)
+		assert isinstance(key_length, int)
+
+		bs = AES.block_size
+		salt = in_file.read(bs)[len(b'Salted__'):]
+		key, iv = Decrypt._derive_key_and_iv(password, salt, key_length, bs)
+		cipher = AES.new(key, AES.MODE_CBC, iv)
+		next_chunk = b''
+		finished = False
+		decrypted_value = b''
+		while not finished:
+			chunk, next_chunk = next_chunk, cipher.decrypt(in_file.read(1024 * bs))
+			if not next_chunk:
+				padding_length = ord(Decrypt._chr(chunk[-1]))
+				chunk = chunk[:-padding_length]
+				finished = True
+			decrypted_value += chunk
+		return decrypted_value.decode('utf-8')
+
 
 def load_plugins(plugin_type, plugins_dir, verbose=False):
 	plugins = []
@@ -93,8 +140,8 @@ def load_plugins(plugin_type, plugins_dir, verbose=False):
 			print('loading ' + plugin_type + ' plugin: ' + plugin)
 		plugin_module = importlib.import_module(plugin_type + '.' + plugin)
 		plugins.append(plugin_module.Plugin)
-	plugins = sorted(plugins, key=lambda plugin: plugin.name)
 	return plugins
+
 
 def _make_plugin_collections(plugin_type, plugins_repo, plugins, signing_key, signing_key_id, verbose=False):
 	plugins_collection = []
@@ -109,8 +156,7 @@ def _make_plugin_collections(plugin_type, plugins_repo, plugins, signing_key, si
 
 		if verbose:
 			print('signing files for ' + plugin_type + ' plugin: ' + plugin['name'])
-		item_files = catalog.sign_item_files(plugin_path, signing_key, signing_key_id, repo_path=plugins_dir)
-		plugin['files'] = list(sorted(item_files, key=lambda item_file: item_file.path_source))
+		plugin['files'] = list(catalog.sign_item_files(plugin_path, signing_key, signing_key_id, repo_path=plugins_dir))
 		for idx, item_file in enumerate(plugin['files']):
 			plugin['files'][idx] = {
 				'path-destination': item_file.path_destination,
@@ -121,6 +167,7 @@ def _make_plugin_collections(plugin_type, plugins_repo, plugins, signing_key, si
 		plugins_collection.append(plugin)
 	return plugins_collection
 
+
 def make_plugin_collections(plugins_repo, plugins, signing_key, signing_key_id, verbose=False):
 	collection = {
 		'plugins/client': _make_plugin_collections('client', plugins_repo, plugins, signing_key, signing_key_id, verbose=verbose),
@@ -128,9 +175,10 @@ def make_plugin_collections(plugins_repo, plugins, signing_key, signing_key_id, 
 	}
 	return collection
 
+
 def main():
 	parser = argparse.ArgumentParser(description='pre-commit hook', conflict_handler='resolve')
-	parser.add_argument('-k', '--key', default=os.getenv('KING_PHISHER_DEV_KEY'), help='path to a signing key')
+	parser.add_argument('-k', '--key', default=os.getenv('KING_PHISHER_DEV_KEY'), help='path to a signing key. (.enc supported)')
 	parser.add_argument('-V', '--verbose', action='store_true', default=False, help='print verbose output')
 	parser.add_argument('-v', '--version', action='version', version='%(prog)s Version: ' + __version__)
 	parser.add_argument('--git-no-add', action='store_false', default=True, dest='git_add', help='don\'t stage changed files in git')
@@ -146,8 +194,28 @@ def main():
 		print('missing read privileges on dev key: ' + arguments.key)
 		return os.EX_NOPERM
 
-	with open(arguments.key, 'r') as file_h:
-		key = serializers.JSON.load(file_h)
+	if not arguments.key.endswith('.enc'):
+		write = 'r'
+	else:
+		arguments.password = (getpass.getpass()).encode('utf-8')
+		write = 'rb'
+
+	with open(arguments.key, write) as file_h:
+
+		if arguments.key.endswith('.enc'):
+			try:
+				decrypted_data = Decrypt.key_file(file_h, password=arguments.password)
+
+				if decrypted_data is not None:
+					file_h = decrypted_data
+					key = json.loads(file_h)
+
+			except Exception:
+				raise ValueError('Invalid Password')
+
+		else:
+			key = serializers.JSON.load(file_h)
+
 		signing_key_id = key['id']
 		signing_key = key['signing-key']
 		signing_key = security_keys.SigningKey.from_dict(signing_key, encoding=signing_key.pop('encoding', 'base64'))
