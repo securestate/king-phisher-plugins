@@ -25,7 +25,7 @@ Advanced HTTP Server
 
 ## Running the tests
 
-In order to test if hello_world.py is operational, exit King Phisher. On exit, a message box will display either with the default options or your own options. The example below is with deafult options: 
+In order to test if hello_world.py is operational, exit King Phisher. On exit, a message box will display either with the default options or your own options. The example below is with default options: 
 ```
 Good bye Alice Liddle!
 ```
