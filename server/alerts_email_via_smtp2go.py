@@ -62,7 +62,7 @@ class Plugin(plugins.ServerPlugin):
 			'recipients' : [user.email_address],
 			'subject' : 'Campaign Event: ' + alert_subscription.campaign.name,
 			'text' : message,
-			'html' : "<html><body><h1>Campain Event: {0}</h1><p>{1}</p></body></html>".format(alert_subscription.campaign.name, message),
+			'html' : "<html><body><h1>Campaign Event: {0}</h1><p>{1}</p></body></html>".format(alert_subscription.campaign.name, message),
 			'custom_headers' : {}
 		}
 		response = api.send(**payload)
