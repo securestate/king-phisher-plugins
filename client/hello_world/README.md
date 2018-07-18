@@ -19,9 +19,9 @@ Advanced HTTP Server
 
 ### Installing 
 
-- [] Download plugin 
-- [] Move plugin to: <code>/opt/king-phisher-plugins/client/</code>
-- [] Configure plugin<code>(refer to Deployment & Configuration below)</code> 
+- [ ] Download plugin 
+- [ ] Move plugin to: <code>/opt/king-phisher-plugins/client/</code>
+- [ ] Configure plugin<code>(refer to Deployment & Configuration below)</code> 
 
 ## Running the tests
 
