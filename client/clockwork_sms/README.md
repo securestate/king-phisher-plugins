@@ -25,7 +25,7 @@ ClockWork API with credits (https://www.clockworksms.com/)
 
 ## Running the tests
 
-In order to test if clockwork_sms.py is operational, we must send out a phishing attempt. Within the following King Phisher Client tabs: `Send Messages -> Configuration -> Target Information.` Once within the target information field, enter the number in which you want to target. Once the proper information is inputted, we need to change to the `Send` tab within the King Phisher Client. Once there we can send our phishing attempt out. 
+In order to test if clockwork_sms.py is operational, we must send out a phishing attempt. Navigate within the following King Phisher Client tabs: `Send Messages -> Configuration -> Target Information.` Once within the target information field, enter the phone number in which you want to target. Once the proper information is inputted, we need to change to the `Send` tab within the King Phisher Client. Once there we can send our phishing attempt out. 
 
 It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command: 
 ```
