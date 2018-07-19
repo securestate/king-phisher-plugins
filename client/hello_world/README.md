@@ -53,6 +53,9 @@ Once server_config.yml is open, navigate to <code>#plugins</code> within the fil
       some_number=2121 
       tcp_port=8080
 ```
+###Client Side Plugin Manager
+In addition to implementing our own configurations into the server_config.yml file, the King Phisher Client is equiped with a `Plugin Manager.` This Plugin Manager contains the toggleable `Installed` and `Enabled` features, both Installed and Enabled checkboxes *must* be checked before use of any King Phisher plugins.  
+
 ## Authors
 
 * **Spencer McIntyre** - *Plugin Author* - [zeroSteiner](https://github.com/zeroSteiner)
