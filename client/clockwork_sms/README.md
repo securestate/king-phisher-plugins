@@ -34,7 +34,7 @@ If the client does not specify the Client Options, the client will receive defau
 
 To implement your options navigate to the toolbar, `EDIT -> PREFRENCES -> PLUGINS` within the King Phisher Client. 
 
-###Client Side Plugin Manager
+### Client Side Plugin Manager
 This Plugin Manager contains the `Installed` and `Enabled` features, both Installed and Enabled checkboxes *must* be checked before use of any King Phisher plugins.  
 
 ## Authors
