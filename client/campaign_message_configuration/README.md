@@ -16,17 +16,14 @@ Linux or Windows
 King Phisher Minimum Required Version = 1.10.0 
 ```
 
-### Use King Phisher Plugin Manager to install and enable plugin
-
-- [ ] Download plugin 
-- [ ] Move plugin to: `/opt/king-phisher-plugins/client/`
-- [ ] Configure plugin `(refer to Deployment & Configuration below)` 
+### Installing
+- [ ] Use King Phisher Clients plugin manager to install and enable
+>It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command. 
 
 ## Running the tests
 
-In order to test if `campaign_message_configuration.py` is operational, we must change campaigns then return back to the original campaign. To create a new campaign, navigate to the King Phisher Client. Once inside of the client we need to open the campaigns menu, to do this go to `File -> Open Campaign -> New Campaign. Once you have generated a new campaign, revert back to the original campaign that you created and check that your settings, etc.. If all campaign information is being saved and properly carried over then the plugin is working properly!  
-
->It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command. 
+In order to test if `campaign_message_configuration.py` is operational, we must change campaigns then return back to the original campaign. To create a new campaign, navigate to the King Phisher Client.
+Once inside of the client we need to open the campaigns menu, to do this go to `File -> Open Campaign -> New Campaign. After you have generated a new campaign, revert back to the original campaign that you created and check that your settings, etc.. If all campaign information is being saved and properly carried over then the plugin is working properly!  
 
 ## Deployment & Configuration 
 

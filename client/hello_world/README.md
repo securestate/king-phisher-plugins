@@ -17,11 +17,10 @@ King Phisher Minimum Required Version = 1.4.0
 Advanced HTTP Server 
 ```
 
-### Use King Phisher Plugin Manager to install and enable plugin
+### Installing
 
-- [ ] Download plugin 
-- [ ] Move plugin to: `/opt/king-phisher-plugins/client/`
-- [ ] Configure plugin `(refer to Deployment & Configuration below)` 
+- [ ] Use King Phisher Clients plugin manager to install and enable
+>It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command. 
 
 ## Running the tests
 

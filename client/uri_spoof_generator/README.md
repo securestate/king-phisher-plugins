@@ -17,16 +17,15 @@ King Phisher Minimum Required Version = 1.0.1
 
 ### Use King Phisher Plugin Manager to install and enable plugin
 
-- [ ] Download plugin 
-- [ ] Move plugin to: `/opt/king-phisher-plugins/client/`
-- [ ] Configure plugin `(refer to Deployment & Configuration below)` 
+- [ ] Use King Phisher Clients plugin manager to install and enable
+>It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command. 
+
 
 ## Running the tests
 
 In order to test if `uri_spoof_generator.py` is operational, we must send out a phishing attempt. Navigate within the following King Phisher Client tabs: `Send Messages -> Configuration -> Target Information.` 
 
-In order to create the URI redirect, navigate to the toolbar, `EDIT -> PREFRENCES -> PLUGINS` within the King Phisher Client. 
-After target information has been filed, we need to configure and create the URI redirect. Navigate to `TOOLS -> Create Data URI Phish` 
+In order to configure the URI redirect, navigate to the toolbar, `EDIT -> PREFRENCES -> PLUGINS` within the King Phisher Client. 
 
 ```
 Redirect URL: <SHOULD BE YOUR KINGPHISH SERVER> 
@@ -34,9 +33,9 @@ Spoofed URI: <SHOULD BE THE SPOOFED URL>
 Output HTML File: <PATH TO SAVE YOUR HTML FILE> 
 ``` 
 
-[URI attacking requires more information than this README will supply. The following URL is a good starting point on how to properly use the URI Spoofing Plugin.](https://youtu.be/Zlk76Oqw7Oo)
+After target information has been filed, we need to create the URI redirect. Navigate to `TOOLS -> Create Data URI Phish` 
 
->It is recommended that end users implementing this plugin run the King Phisher Client in debug mode before testing the plugin. `DEBUG` is accomplished by inserting `-L DEBUG` onto the execution command. 
+[URI attacking requires more information than this README will supply. The following URL is a good starting point on how to properly use the URI Spoofing Plugin.](https://youtu.be/Zlk76Oqw7Oo)
 
 Once `DEBUG` logging has been enabled, send out the phishing attempt and keep an eye on the `DEBUG` logging. Once target opens phishing URL, the redirect should dispatch onto a new tab within the browser window. If you see any `WARNING` or `CRITICAL` within the log, check your configurations and begin the README process again. 
 
