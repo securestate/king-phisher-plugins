@@ -17,42 +17,24 @@ King Phisher Minimum Required Version = 1.4.0
 Advanced HTTP Server 
 ```
 
-### Installing 
+### Use King Phisher Plugin Manager to install and enable plugin
 
 - [ ] Download plugin 
-- [ ] Move plugin to: <code>/opt/king-phisher-plugins/client/</code>
-- [ ] Configure plugin<code>(refer to Deployment & Configuration below)</code> 
+- [ ] Move plugin to: `/opt/king-phisher-plugins/client/`
+- [ ] Configure plugin `(refer to Deployment & Configuration below)` 
 
 ## Running the tests
 
-In order to test if hello_world.py is operational, exit King Phisher. On exit, a message box will display either with the default options or your own options. The example below is with deafult options: 
+In order to test if hello_world.py is operational, exit King Phisher. On exit, a message box will display either with the default options or your own options.
 ```
 Good bye Alice Liddle!
 ```
 ## Deployment & Configuration 
 
-On line 24 of hello_world.py is the start of Client Options. If the client does not specify the Client Options, the client will recieve default values for those options. 
+If the client does not specify the Client Options, the client will recieve default values for those options. 
 
-To implement your options to <code>Client Options</code>, navigate to <code>/king-phisher/server_config.yml</code> 
+To implement your options navigate to the toolbar, `EDIT -> PREFRENCES -> PLUGINS` within the King Phisher Client. 
 
-Once server_config.yml is open, navigate to <code>#plugins</code> within the file. Here we will implement our own options:
->Note that proper spacing is critical to the server_config.yml file.
-```
-#EXAMPLE
-  Two spaces
-    Four spaces
-      Six spaces
-```
-
-```
-#EXAMPLE
-  plugins: 
-    hello_world:
-      display_name="Alice"
-      validiction=False
-      some_number=2121 
-      tcp_port=8080
-```
 ## Authors
 
 * **Spencer McIntyre** - *Plugin Author* - [zeroSteiner](https://github.com/zeroSteiner)
