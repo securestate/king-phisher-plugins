@@ -22,9 +22,13 @@ King Phisher Minimum Required Version = 1.5.0
 
 ## Running the tests
 
-In order to test if `dmarc.py` is operational, we must send out a phishing attempt. Within the following King Phisher Client tabs: `Send Messages -> Configuration -> Target Information.` Once within the target information field, enter the target. Once the proper information is inputted, we need to change to the `Send` tab within the King Phisher Client. Once there we can send our phishing attempt out. 
+In order to test if `dmarc.py` is operational, we must send out a phishing attempt. Within the following King Phisher Client tabs: `Send Messages -> Configuration -> Target Information.` Once within the target information field, enter the target. After the proper information is inputted, we need to change to the `Send` tab within the King Phisher Client. Within the `Send` tab we can send our phishing attempt out. 
 
-Once `DEBUG` logging has been enabled, send out the phishing attempt and keep an eye on the `DEBUG` logging. If you see any `WARNING` or `CRITICAL` within the log, check your configurations and begin the README process again. Else, if the plugin executed successfully, DMARC tags will be stripped out dependent upon the following domain variables: 
+While `DEBUG` logging has been enabled, send out the phishing attempt and keep an eye on the `DEBUG` logging. Epecially, `WARNING`, `CRITICAL` or `INFO`: 
+```
+INFO     skipping dmarc policy check because the smtp server address could not be resolved
+```
+If you are getting this error refer to King Phisher `Issue #220`. Else, if the plugin executed successfully, DMARC tags will be stripped out dependent upon the following domain variables: 
 ```
 # DMARC Variables
 record 
@@ -36,7 +40,7 @@ policy
 This plugin does not contain any client options. 
 
 ### Client Side Plugin Manager
-This Plugin Manager contains the `Installed` and `Enabled` features, both Installed and Enabled checkboxes *must* be checked before use of any King Phisher plugins.  
+This Plugin Manager contains the `Installed` and `Enabled` features, both `Installed` and `Enabled` checkboxes *must* be checked before use of any King Phisher plugins.  
 
 ## Authors
 
