@@ -96,6 +96,14 @@ class Plugin(plugins.ServerPlugin):
         signals.db_session_inserted.connect(self.new_challenger_approaches, sender='credentials')
         return True
 
+    def illegal_char_check(self, name, value):
+        illegal_chars = ['/', '\\', '[', ']', ':', ';', '|', '=', ',', '+', '*', '?', '<', '>', ' ', '&', '!', '~', '#', '%', '^', '(', ')', '{', '}' '`']
+        for illegal in illegal_chars:
+            if illegal in value:
+                self.logger.warning('Aborting. Found illegal character in {0}: {1}'.format(name, illegal))
+                return True
+        return False
+
     def new_challenger_approaches(self, sender, targets, session):
         for event in targets:
             # Order by most recent datetime
@@ -146,14 +154,11 @@ class Plugin(plugins.ServerPlugin):
                 if self.config['strip_domain']:
                     username = username.split('\\')[-1]
 
-            illegal_chars = ['/', '\\', '[', ']', ':', ';', '|', '=', ',', '+', '*', '?', '<', '>', ' ', '&', '!', '~', '#', '%', '^', '(', ')', '{', '}' '`']
-            for illegal in illegal_chars:
-                if illegal in username:
-                    self.logger.warning('Aborting. Found illegal character in username: {0}'.format(illegal))
-                    continue
-                if illegal in mfa:
-                    self.logger.warning('Aborting. Found illegal character in MFA: {0}'.format(illegal))
-                    continue
+            if self.illegal_char_check('username', username):
+                continue
+
+            if self.illegal_char_check('MFA', mfa):
+                continue
 
             username = re.escape(username)
             password = re.escape(password)
