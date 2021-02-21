@@ -88,7 +88,7 @@ class Plugin(getattr(plugins, 'ClientPluginMailerAttachment', plugins.ClientPlug
 			doc = DocxTemplate(input_path)
 			rt = RichText()
 			template_vars = mailer.render_DOC_template_var(self.application.config, target)
-			rt.add('Alibaba',url_id=doc.build_url_id(template_vars['url']['webserver']))
+			rt.add('yourname',url_id=doc.build_url_id(template_vars['url']['webserver']))
 			context = {'target_name': template_vars['client']['first_name'], 'target_email_address': template_vars['client']['email_address'], 'secret_id': template_vars['uid'], 'example': rt }	
 			doc.render(context)
 			doc.save(output_path)		
