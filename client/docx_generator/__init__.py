@@ -22,8 +22,8 @@ class Plugin(getattr(plugins, 'ClientPluginMailerAttachment', plugins.ClientPlug
 	classifiers = ['Plugin :: Client :: Email :: Attachment']
 	title = 'Generate DOCX'
 	description = """
-	Generates a DOCX file from an TemplateFile that process client King Phisher Jinja variables
-	allowing embed variables to your attach file that so users that open DOCX  can be tracked."""
+	Generates a DOCX file from a template that can process King Phisher client Jinja variables,
+	allowing embedded variables within the attachment file that so users that open the DOCX  can be tracked."""
 	homepage = 'https://github.com/securestate/king-phisher-plugins'
 	req_min_version = '1.8.0'
 	req_packages = {
